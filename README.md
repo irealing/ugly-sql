@@ -35,7 +35,7 @@ from ugly_sql import Table
 User = Table("users",("id","name","password"),"id",True)
 db_cfg={}
 if __name__ == '__main__':
-    with db_ctx(**db_cfg,True) as db:
-        user=db.query(User).filter(User.name=="root",User.password="***").one()
+    with db_ctx(db_cfg,True) as db:
+        user=db.query(User).filter(User.name=="root",User.password=="***").one()
         print("name= {}\n password= {}".format(user.name,user.password))
 ```
