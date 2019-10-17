@@ -1,5 +1,8 @@
 # coding:utf-8
+
 from ._db import Update
+
+from ._patch import local_map
 
 __author__ = 'Memory_Leak<irealing@163.com>'
 
@@ -43,7 +46,7 @@ class DBObjProxy(object):
 
     def __modify__(self):
         m = Update(self.table)
-        map(m.set, self._update.values())
+        local_map(m.set, self._update.values())
         m.where(self.table.primary_key == self._raw[self.table.primary_key.name])
         return m
 

@@ -1,7 +1,10 @@
 # coding:utf-8
 from collections import OrderedDict
 
+from ._patch import local_map
+
 __author__ = 'Memory_Leak<irealing@163.com>'
+map = local_map
 
 
 class Table(object):

@@ -5,12 +5,14 @@ ugly-sql 数据库工具
 from setuptools import setup, find_packages
 
 __author__ = 'Memory_Leak<irealing@163.com>'
-
+with open('README.md', 'r') as readme:
+    doc = readme
 setup(
     name="ugly_sql",
-    version="0.0.1",
+    version="0.0.3",
     author=__author__,
-    description="ugly-sql database tool",
-    long_description=__doc__,
+    description=__doc__,
+    long_description=doc,
+    long_description_content_type='text/markdown',
     packages=find_packages(),
 )
