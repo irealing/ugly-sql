@@ -123,6 +123,9 @@ class Field(SQLFragment):
     def distinct(self):
         return WrapField("DISTINCT", self)
 
+    def between(self, start, end):
+        return _Between(self, start, end)
+
 
 class FuncField(Field):
     """
@@ -149,6 +152,19 @@ class WrapField(Field):
 
     def sql(self):
         return "{} {}".format(self.__wrap, super(WrapField, self).sql())
+
+
+class _Between(SQLFragment):
+    def __init__(self, field, start, end):
+        self._field = field
+        self._start = start
+        self._end = end
+
+    def sql(self):
+        return "{} BETWEEN %s AND %s".format(self._field.sql())
+
+    def args(self):
+        return self._start, self._end
 
 
 class Filter(SQLFragment):

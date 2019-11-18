@@ -7,7 +7,7 @@ with open('README.md', 'r', encoding='utf-8') as readme:
     doc = readme.read()
 setup(
     name="ugly_sql",
-    version="0.0.5",
+    version="0.0.6",
     author=__author__,
     description=__doc__,
     long_description=doc,
