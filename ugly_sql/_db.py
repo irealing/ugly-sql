@@ -184,7 +184,7 @@ class ORFilter(Filter):
         self.__fs = fs
 
     def sql(self):
-        return " OR ".join(map(lambda f: f.sql(), self.__fs))
+        return "({})".format(" OR ".join(map(lambda f: f.sql(), self.__fs)))
 
     def args(self):
         params = []
