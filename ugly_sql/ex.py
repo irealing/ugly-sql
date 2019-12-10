@@ -1,4 +1,8 @@
 import logging
+import sys
+from contextlib import contextmanager
+
+from ._dao import SessionManager
 
 __author__ = 'Memory_Leak<irealing@163.com>'
 
@@ -77,3 +81,21 @@ class DBConsole(object):
             if conn:
                 cursor.close()
                 conn.close()
+
+
+@contextmanager
+def ugly_db_ctx(connect, begin=False):
+    conn = connect()
+    manager = SessionManager(conn)
+    try:
+        if begin:
+            manager.begin()
+        yield manager.__enter__()
+        manager.__exit__(None, None, None)
+    except Exception as e:
+        logging.exception("ugly_db_ctx exception %s", e.__class__.__name__)
+        et, ev, tb = sys.exc_info()
+        manager.__exit__(et, ev, tb)
+        raise e
+    finally:
+        conn.close()
