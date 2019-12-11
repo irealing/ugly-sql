@@ -52,7 +52,7 @@ class DBSession(object):
         :param params:
         :return:
         """
-        self.logger.info("execute sql : %s", sql)
+        self.logger.debug("execute sql : %s", sql)
         self.__cursor.execute(sql, params)
         return self.__cursor.fetchall() if rows else self.__cursor.fetchone()
 
