@@ -132,8 +132,8 @@ class DBQuery:
             rdata.extend(row[cursor:])
         return rdata
 
-    def order_by(self, order):
-        self.__sql_query.order_by(order)
+    def order_by(self, *order):
+        self.__sql_query.order_by(*order)
         return self
 
     def group_by(self, *col):
