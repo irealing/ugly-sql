@@ -47,7 +47,7 @@ class OrderBy(SQLFragment):
     排序ORDER BY
     """
 
-    def __init__(self, *column):
+    def __init__(self, column):
         self.column = column
         self.order = "ASC"
 
@@ -61,6 +61,16 @@ class OrderBy(SQLFragment):
     def desc(self):
         self.order = "DESC"
         return self
+
+
+class _OrderByGroup(SQLFragment):
+    def __init__(self, *condition: OrderBy):
+        self._conditions = condition
+
+    def sql(self):
+        return 'ORDER BY {}'.format(
+            ','.join(map(lambda it: "{} {}".format(it.column.sql(), it.order), self._conditions))
+        )
 
 
 class GroupBy(SQLFragment):
@@ -123,6 +133,9 @@ class Field(SQLFragment):
     def distinct(self):
         return WrapField("DISTINCT", self)
 
+    def between(self, start, end):
+        return _Between(self, start, end)
+
 
 class FuncField(Field):
     """
@@ -151,6 +164,19 @@ class WrapField(Field):
         return "{} {}".format(self.__wrap, super(WrapField, self).sql())
 
 
+class _Between(SQLFragment):
+    def __init__(self, field, start, end):
+        self._field = field
+        self._start = start
+        self._end = end
+
+    def sql(self):
+        return "{} BETWEEN %s AND %s".format(self._field.sql())
+
+    def args(self):
+        return self._start, self._end
+
+
 class Filter(SQLFragment):
     """
     过滤条件
@@ -168,7 +194,7 @@ class ORFilter(Filter):
         self.__fs = fs
 
     def sql(self):
-        return " OR ".join(map(lambda f: f.sql(), self.__fs))
+        return "({})".format(" OR ".join(map(lambda f: f.sql(), self.__fs)))
 
     def args(self):
         params = []
@@ -308,8 +334,9 @@ class Query(SQLFragment):
             sql = "{} LIMIT %s,%s".format(sql)
         return sql
 
-    def order_by(self, order):
-        self.__order = order
+    def order_by(self, *order):
+        assert order
+        self.__order = order[0] if len(order) < 2 else _OrderByGroup(*order)
         return self
 
     def group_by(self, group):
