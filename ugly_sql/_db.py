@@ -47,7 +47,7 @@ class OrderBy(SQLFragment):
     排序ORDER BY
     """
 
-    def __init__(self, *column):
+    def __init__(self, column):
         self.column = column
         self.order = "ASC"
 
@@ -61,6 +61,16 @@ class OrderBy(SQLFragment):
     def desc(self):
         self.order = "DESC"
         return self
+
+
+class _OrderByGroup(SQLFragment):
+    def __init__(self, *condition: OrderBy):
+        self._conditions = condition
+
+    def sql(self):
+        return 'ORDER BY {}'.format(
+            ','.join(map(lambda it: "{} {}".format(it.column.sql(), it.order), self._conditions))
+        )
 
 
 class GroupBy(SQLFragment):
@@ -324,8 +334,9 @@ class Query(SQLFragment):
             sql = "{} LIMIT %s,%s".format(sql)
         return sql
 
-    def order_by(self, order):
-        self.__order = order
+    def order_by(self, *order):
+        assert order
+        self.__order = order[0] if len(order) < 2 else _OrderByGroup(*order)
         return self
 
     def group_by(self, group):
